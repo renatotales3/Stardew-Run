@@ -2,32 +2,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
+    // Elementos da UI
     const scoreElement = document.getElementById('score');
     const finalScoreElement = document.getElementById('final-score');
-    const startScreen = document.getElementById('start-screen');
-    const gameOverScreen = document.getElementById('game-over-screen');
+    const pauseBtn = document.getElementById('pause-btn');
+    const startMenu = document.getElementById('start-menu');
+    const pauseMenu = document.getElementById('pause-menu');
+    const gameOverMenu = document.getElementById('game-over-menu');
+    const startBtn = document.getElementById('start-btn');
+    const resumeBtn = document.getElementById('resume-btn');
+    const restartBtnPause = document.getElementById('restart-btn-pause');
+    const restartBtnGameOver = document.getElementById('restart-btn-gameover');
+
+    // --- Imagens do Jogo (Base64) ---
+    const images = {
+        player: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABeElEQVR42mNgoBAwMjAwMDAxMAKJMDAw+I+YhYlBgoGFgYGBgRGxCiYmBgYGKgYhNhYwMDCQASQSEwuI/QDEDmJjAgMDAwOYgAQG2P+ZmBgZkGIAsrE4+A+Eg21iYGBgYgGyAZkZGRm+IyMj/wuQAf+B2AAYOzt7/8+fP/+fP3/+f/78+f/NmzcfC2oA7gNxCixYwMHBwQGQUbIAgPMEQv4DMQP4+Pj4/+HDhz8DAwM/QJqBgYGBAUgwgCiAzAABIMwAAUgygCiAzL///v0L0ECQAUgNEoA0QASINkAgBgEDAwPD//8/oHDeA/H/AykABkZGRv+BMAmQgQYGBgYWBgYGFzIysgASAycDAwMDYGAzMLAFysjIwMDAsMjEABM7NzcHmF14eLgBwQ0gPjAwMBgYGP4DMQcaGIwMjH8GhgEwN/yHCw8PD1mGhf8ZGBiQASQSEwswMDCQASQSUxkYAAIMAJUgEW5F9Yp3AAAAAElFTkSuQmCC',
+        obstacleRock: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAoElEQVR42mNgGAWjAAgA8T8D4nAgFpBGGGhA+v/kP9ADhJ8xqAGdAN0AyH8g/Q/ED4FYD4j9gfgfED+DwTkgdgNiKyCGA+IZIH4LxL5ArAnE3kDsBMT+QGwKxEJArAnEwUD8H4ilgVgKiAOBmAoIlwPxLxArALEQECcC8SogjgLiaCCmAmL5QkQzIF4NxAJAjAXEk4FYGAgAAPsWEZ2NAnkAAAAASUVORK5CYII=',
+        obstacleLog: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAkCAYAAADo6zjiAAAAyklEQVR42mNgGAWjgCgg6ADxPz8gTgfiUCC2h6GBCQy6ADJ9/x8S/oBwDggvANkA0X+gDBA+A+IzIH4MxbZAbAbED0D8DIhjgTgYdGkASv8/JP0/AvE/INYDYj8gDgFiRSBWA+IbID4CxOZA7A/EbkCsC8QOQCwMxHpAbALEIkDsBsQuQCwOxEJArAnE0kDsBsQGQFwNiFWAuAYIWwDxNhC3AfEuEB8B4s1AbAaEC0C8C8QbgPgOEHcAcS8QFgKiYSAaBgoGAAD3hRO2L13L3gAAAABJRU5ErkJggg==',
+        background: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAGACAYAAABSVsc9AAABWElEQVR42u3BAQ0AAADCoPVPbQwfoAAAAAAAAAAAAAD+BwAAAAAAAAAAAACAnwEAAAAAAAAAAAAAQH8DAAAAAAAAAAAAAICfAQAAAAAAAAAAAABA/wMAAAAAAAAAAAAAgJ8BAAAAAAAAAAAAAEB/AwAAAAAAAAAAAACAnwEAAAAAAAAAAAAAQH8DAAAAAAAAAAAAAICfAQAAAAAAAAAAAABA/wMAAAAAAAAAAAAAgJ8BAAAAAAAAAAAAAEB/AwAAAAAAAAAAAACAnwEAAAAAAAAAAAAAQH8DAAAAAAAAAAAAAICfAQAAAAAAAAAAAABA/wMAAAAAAAAAAAAAgJ8BAAAAAAAAAAAAAEB/AwAAAAAAAAAAAACAnwEAAAAAAAAAAAAAQH8DAAAAAAAAAAAAAICfAQAAAAAAAAAAAABA/wMAAAAAAAAAAAAAgJ8BAAAAAAAAAAAAAEB/AwAAAAAAAAAAAACAnwEAAAAAAAAAAAAAQH8DAPgG/qgAAbxABNMAAAAASUVORK5CYII=',
+        iconPause: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAHElEQVR42mNgGAWjgD/wDAwMyMDwAFEvEA0DAEDVDAwW+nUEAAAAAElFTkSuQmCC',
+        iconResume: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAANklEQVR42mNgGAWjgAwwMjD8B8SFwPy/f//+AxP//xBCB0D+Dxj8BxJtYGBgYGAQRhQMEg0DAGq5G47l8d4GAAAAAElFTkSuQmCC',
+        iconRestart: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABDUlEQVR42mNgoBAwMjAwMDAxMAKJMDAw+I+YhYlBgoGFgYGBgRGxCiYmBgYGKgYhNhYwMDCQASQSEwuI/QDEDmJjAgMDAwOYgAQG2P+ZmBgZkGIAsrE4+A+Eg21iYGBgYgGyAZkZGRm+IyMj/wuQAf+B2AAYOzt7/8+fP/+fP3/+f/78+f/NmzcfC2oA7gNxCixYwMHBwQGQUbIAgPMEQv4DMQP4+Pj4/+HDhz8DAwM/QJqBgYGBAUgwgCiAzAABIMwAAUgygCiAzL///v0L0ECQAUgNEoA0QASINkAgBgEDAwPD//8/oHDeA/H/AykABkZGRv+BMAmQgQYGBgYWBgYGFzIysgASAycDAwMDYGAzMLAFysjIwMDAsMjEABM7NzcHmF14eLgBwQ0gPjAwMBgYGP4DMQcaGIwMjH8GhgEwN/yHCw8PD1mGhf8ZGBiQASQSEwswMDCQASQSUxkYAAIMAJUgEW5F9Yp3AAAAAElFTkSuQmCC'
+    };
+    const loadedImages = {};
+
+    let gameState = 'loading'; // loading, menu, playing, paused, gameOver
+    let animationFrameId;
 
     // --- Configurações do Jogo ---
-    const groundHeight = 50;
-    let gameSpeed = 3;
+    const groundHeight = 80;
+    let gameSpeed = 4;
     let score = 0;
-    let isGameOver = true;
-    let animationFrameId;
+    let backgroundX = 0;
 
     // --- Configurações do Jogador (Junimo) ---
     const player = {
-        x: 50,
+        x: 60,
         y: canvas.height - groundHeight,
-        width: 40,
-        height: 40,
-        dy: 0, // Velocidade vertical
-        jumpPower: 15,
-        gravity: 0.8,
+        width: 32,
+        height: 32,
+        dy: 0,
+        jumpPower: 16,
+        gravity: 0.7,
         isJumping: false,
         draw() {
-            // Placeholder: Substitua por uma imagem de um Junimo
-            ctx.fillStyle = '#90EE90'; // Verde claro para o Junimo
-            ctx.fillRect(this.x, this.y - this.height, this.width, this.height);
+            ctx.drawImage(loadedImages.player, this.x, this.y - this.height, this.width, this.height);
         },
         update() {
             if (this.isJumping) {
@@ -41,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         jump() {
-            if (!this.isJumping) {
+            if (!this.isJumping && gameState === 'playing') {
                 this.isJumping = true;
                 this.dy = this.jumpPower;
             }
@@ -51,22 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Configurações dos Obstáculos ---
     let obstacles = [];
     const obstacleTypes = [
-        { width: 30, height: 30, color: '#8B4513' }, // Pedra
-        { width: 40, height: 60, color: '#A0522D' }  // Tronco
+        { img: 'obstacleRock', width: 24, height: 24 },
+        { img: 'obstacleLog', width: 32, height: 32 }
     ];
     let obstacleTimer = 0;
-    let nextObstacleTime = 100; // Tempo inicial para o primeiro obstáculo
+    let nextObstacleTime = 120;
 
     function generateObstacle() {
         const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
-        const obstacle = {
+        obstacles.push({
+            img: type.img,
             x: canvas.width,
-            y: canvas.height - groundHeight - type.height,
             width: type.width,
             height: type.height,
-            color: type.color
-        };
-        obstacles.push(obstacle);
+            y: canvas.height - groundHeight - type.height,
+        });
     }
 
     function updateObstacles() {
@@ -74,26 +92,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (obstacleTimer > nextObstacleTime) {
             generateObstacle();
             obstacleTimer = 0;
-            // Gera obstáculos em intervalos variados
-            nextObstacleTime = Math.random() * (150 - 50) + 50 / gameSpeed;
+            nextObstacleTime = Math.floor(Math.random() * (120 - 60 + 1) + 60) / (gameSpeed / 4);
         }
-
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            let obs = obstacles[i];
+        obstacles.forEach(obs => {
             obs.x -= gameSpeed;
-
-            // Desenha o obstáculo
-            // Placeholder: Substitua por imagens de pedras, troncos, etc.
-            ctx.fillStyle = obs.color;
-            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-
-            // Remove obstáculos que saíram da tela
-            if (obs.x + obs.width < 0) {
-                obstacles.splice(i, 1);
-            }
-        }
+            ctx.drawImage(loadedImages[obs.img], obs.x, obs.y, obs.width, obs.height);
+        });
+        obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
     }
-    
+
+    // --- Desenho do Cenário ---
+    function drawBackground() {
+        // Céu
+        ctx.fillStyle = '#87CEEB';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Fundo com scroll
+        backgroundX -= gameSpeed * 0.5;
+        if (backgroundX <= -loadedImages.background.width) {
+            backgroundX = 0;
+        }
+        ctx.drawImage(loadedImages.background, backgroundX, 0, loadedImages.background.width, canvas.height);
+        ctx.drawImage(loadedImages.background, backgroundX + loadedImages.background.width, 0, loadedImages.background.width, canvas.height);
+
+
+        // Chão
+        ctx.fillStyle = '#5d9c57';
+        ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
+        ctx.fillStyle = '#4b2d1a'; // Borda superior do chão
+        ctx.fillRect(0, canvas.height - groundHeight, canvas.width, 5);
+    }
+
     // --- Detecção de Colisão ---
     function checkCollision() {
         for (const obs of obstacles) {
@@ -103,95 +132,97 @@ document.addEventListener('DOMContentLoaded', () => {
                 (player.y - player.height) < obs.y + obs.height &&
                 player.y > obs.y
             ) {
-                endGame();
+                changeState('gameOver');
             }
         }
     }
 
-    // --- Desenho do Cenário ---
-    function drawBackground() {
-        // Céu
-        ctx.fillStyle = '#87CEEB';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Chão
-        ctx.fillStyle = '#228B22';
-        ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
-    }
-    
-    // --- Loop Principal do Jogo ---
+    // --- Loop Principal ---
     function gameLoop() {
-        if (isGameOver) return;
-        
         animationFrameId = requestAnimationFrame(gameLoop);
+        
+        if (gameState !== 'playing') return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
         drawBackground();
+        updateObstacles();
 
-        // Atualiza e desenha elementos
         player.update();
         player.draw();
-        updateObstacles();
-        
-        // Checa colisões
+
         checkCollision();
-        
-        // Atualiza pontuação e velocidade
+
         score++;
         scoreElement.textContent = score;
-        if (score % 100 === 0) {
+        if (score > 0 && score % 200 === 0) {
             gameSpeed += 0.2;
         }
     }
 
-    // --- Funções de Controle do Jogo ---
+    // --- Gerenciador de Estado ---
+    function changeState(newState) {
+        gameState = newState;
+        // Esconde tudo e depois mostra o necessário
+        [startMenu, pauseMenu, gameOverMenu, pauseBtn].forEach(el => el.style.display = 'none');
+
+        if (newState === 'menu') {
+            startMenu.style.display = 'flex';
+        } else if (newState === 'playing') {
+            pauseBtn.style.display = 'block';
+            gameLoop();
+        } else if (newState === 'paused') {
+            pauseMenu.style.display = 'flex';
+        } else if (newState === 'gameOver') {
+            finalScoreElement.textContent = score;
+            gameOverMenu.style.display = 'flex';
+            cancelAnimationFrame(animationFrameId);
+        }
+    }
+
     function startGame() {
-        isGameOver = false;
         score = 0;
-        gameSpeed = 3;
+        gameSpeed = 4;
         obstacles = [];
         player.y = canvas.height - groundHeight;
-        
+        player.isJumping = false;
+        player.dy = 0;
         scoreElement.textContent = score;
-        startScreen.style.display = 'none';
-        gameOverScreen.style.display = 'none';
+        changeState('playing');
+    }
+
+    // --- Carregamento e Controles ---
+    function preload() {
+        let loadedCount = 0;
+        const totalImages = Object.keys(images).length;
         
-        gameLoop();
-    }
+        pauseBtn.style.backgroundImage = `url(${images.iconPause})`;
 
-    function endGame() {
-        isGameOver = true;
-        cancelAnimationFrame(animationFrameId);
-        finalScoreElement.textContent = score;
-        gameOverScreen.style.display = 'flex';
-    }
-
-    // --- Controles (Toque e Teclado) ---
-    function handleInput() {
-        if (isGameOver) {
-             // Começa ou reinicia o jogo
-            const isFirstStart = startScreen.style.display !== 'none';
-            if (isFirstStart || gameOverScreen.style.display !== 'none') {
-                startGame();
-            }
-        } else {
-            // Pula
-            player.jump();
+        for (const key in images) {
+            loadedImages[key] = new Image();
+            loadedImages[key].src = images[key];
+            loadedImages[key].onload = () => {
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                    changeState('menu'); // Inicia no menu principal
+                }
+            };
         }
     }
-    
-    // Para celular
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Evita comportamento padrão do navegador (zoom, etc)
-        handleInput();
-    });
 
-    // Para teste no desktop
-    window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') {
-            e.preventDefault();
-            handleInput();
-        }
-    });
+    // Event Listeners
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); player.jump(); });
+    window.addEventListener('keydown', e => { if (e.code === 'Space') player.jump(); });
+
+    startBtn.onclick = startGame;
+    restartBtnPause.onclick = startGame;
+    restartBtnGameOver.onclick = startGame;
+
+    pauseBtn.onclick = () => {
+        if (gameState === 'playing') changeState('paused');
+    };
+    resumeBtn.onclick = () => {
+        if (gameState === 'paused') changeState('playing');
+    };
+
+    preload();
 });
