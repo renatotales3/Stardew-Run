@@ -3,25 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Stardew Valley Jumper</title>
+    <title>Stardew Jumper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <h1>Stardew Jumper</h1>
         <canvas id="gameCanvas" width="360" height="640"></canvas>
-        <div id="score-container">Pontuação: <span id="score">0</span></div>
-        <div id="start-screen" class="overlay">
-            <div class="content">
-                <h2>Toque para começar</h2>
-                <p>Ajude o Junimo a pular os obstáculos!</p>
+        
+        <!-- UI do Jogo -->
+        <div id="game-ui">
+            <div id="score-container">Pontos: <span id="score">0</span></div>
+            <button id="pause-btn" class="ui-btn"></button>
+        </div>
+
+        <!-- Telas de Overlay -->
+        <div id="start-menu" class="overlay">
+            <div class="menu-box">
+                <h1>Stardew Jumper</h1>
+                <p>Ajude o Junimo a desviar dos obstáculos!</p>
+                <button id="start-btn" class="menu-btn">Iniciar</button>
             </div>
         </div>
-        <div id="game-over-screen" class="overlay" style="display: none;">
-            <div class="content">
-                <h2>Fim de Jogo!</h2>
-                <p>Sua pontuação final foi: <span id="final-score">0</span></p>
-                <p class="restart-text">Toque para jogar novamente</p>
+
+        <div id="pause-menu" class="overlay" style="display: none;">
+            <div class="menu-box">
+                <h2>Pausado</h2>
+                <button id="resume-btn" class="menu-btn">Continuar</button>
+                <button id="restart-btn-pause" class="menu-btn">Reiniciar</button>
+            </div>
+        </div>
+
+        <div id="game-over-menu" class="overlay" style="display: none;">
+            <div class="menu-box">
+                <h2>Fim de Jogo</h2>
+                <p>Pontuação: <span id="final-score">0</span></p>
+                <button id="restart-btn-gameover" class="menu-btn">Jogar Novamente</button>
             </div>
         </div>
     </div>
