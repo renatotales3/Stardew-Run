@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stardew Valley Runner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🌾 Stardew Valley Runner 🌾</h1>
+            <div class="score-board">
+                <div class="score">Pontuação: <span id="score">0</span></div>
+                <div class="high-score">Recorde: <span id="highScore">0</span></div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+            <div class="game-overlay" id="gameOverlay">
+                <div class="start-screen" id="startScreen">
+                    <h2>🎮 Bem-vindo ao Stardew Valley Runner! 🎮</h2>
+                    <p>Ajude o fazendeiro a pular os obstáculos!</p>
+                    <div class="character-selection">
+                        <h3>Escolha seu personagem:</h3>
+                        <div class="characters">
+                            <button class="character-btn active" data-character="farmer">👨‍🌾 Fazendeiro</button>
+                            <button class="character-btn" data-character="farmergirl">👩‍🌾 Fazendeira</button>
+                        </div>
+                    </div>
+                    <button class="start-btn" id="startBtn">🚀 Começar Jogo</button>
+                </div>
+                
+                <div class="game-over-screen hidden" id="gameOverScreen">
+                    <h2>💀 Game Over! 💀</h2>
+                    <p>Sua pontuação: <span id="finalScore">0</span></p>
+                    <p id="newRecordMsg" class="hidden new-record">🏆 Novo Recorde! 🏆</p>
+                    <button class="restart-btn" id="restartBtn">🔄 Jogar Novamente</button>
+                </div>
+                
+                <div class="pause-screen hidden" id="pauseScreen">
+                    <h2>⏸️ Jogo Pausado ⏸️</h2>
+                    <button class="resume-btn" id="resumeBtn">▶️ Continuar</button>
+                    <button class="restart-btn" id="restartFromPauseBtn">🔄 Reiniciar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-buttons">
+                <button class="control-btn jump-btn" id="jumpBtn">
+                    <span class="btn-icon">⬆️</span>
+                    <span class="btn-text">PULAR</span>
+                </button>
+                <button class="control-btn duck-btn" id="duckBtn">
+                    <span class="btn-icon">⬇️</span>
+                    <span class="btn-text">ABAIXAR</span>
+                </button>
+                <button class="control-btn pause-btn" id="pauseBtn">
+                    <span class="btn-icon">⏸️</span>
+                    <span class="btn-text">PAUSAR</span>
+                </button>
+            </div>
+            <div class="keyboard-info">
+                <p>🎮 Controles: ESPAÇO para pular, ↓ para abaixar, P para pausar</p>
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-section">
+                <h3>🌱 Como Jogar:</h3>
+                <ul>
+                    <li>• Use os botões ou teclas para controlar seu personagem</li>
+                    <li>• Pule sobre pedras e corvos</li>
+                    <li>• Abaixe-se para passar por galhos baixos</li>
+                    <li>• Colete estrelas para pontos extras!</li>
+                    <li>• Quanto mais longe, mais rápido fica!</li>
+                </ul>
+            </div>
+            <div class="info-section">
+                <h3>🏆 Objetivos:</h3>
+                <ul>
+                    <li>• Sobreviva o máximo possível</li>
+                    <li>• Colete estrelas douradas (+50 pontos)</li>
+                    <li>• Bata seu recorde pessoal!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
